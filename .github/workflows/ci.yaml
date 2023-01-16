@@ -17,7 +17,13 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
-        run: rojo build -o build.rbxm
+        run: rojo build -o Red.rbxm
+      
+      - name: Upload build
+        uses: actions/upload-artifact@v3
+        with:
+          name: Red
+          path: Red.rbxm
 
   analyze:
     runs-on: ubuntu-latest
