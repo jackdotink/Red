@@ -49,7 +49,7 @@ available and accurate.
 ## The Future of Red
 
 Red is currently in a pre-release state. I will personally
-using Red in my own projects, and will be fixing any bugs I
-stumble upon and adding features as I need them. Feel free
+be using Red in my own projects, and will be fixing any bugs
+I stumble upon and adding features as I need them. Feel free
 to contribute to the project, or open an issue if you find
 any bugs.
