@@ -46,7 +46,7 @@ function Server.FireAllExcept(self: Server, Player: Player, EventName: string, .
 	end
 end
 
-function Server.Callback(self: Server, EventName: string, Callback: (Player, ...any) -> (...any))
+function Server.Callback(self: Server, EventName: string, Callback: ((Player, ...any) -> (...any))?)
 	Event.SetCallback(self.Name .. "_" .. EventName, Callback)
 end
 
@@ -91,7 +91,7 @@ function Client.Call(self: Client, EventName: string, ...)
 	return Event.Call(self.Name .. "_" .. EventName, ...)
 end
 
-function Client.Callback(self: Client, EventName: string, Callback: (...any) -> (...any))
+function Client.Callback(self: Client, EventName: string, Callback: ((...any) -> (...any))?)
 	Event.SetCallback(self.Name .. "_" .. EventName, Callback)
 end
 
@@ -144,8 +144,6 @@ function Net.Client(Name: string?): Client
 		return Net.ClientNamespaceList[Name]
 	end
 end
-
-Net.Serdes = Serdes
 
 Event.Listen()
 

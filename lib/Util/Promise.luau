@@ -7,8 +7,8 @@ function Promise.Promise(Callback: (Resolve: (...any) -> (), Reject: (Error: str
 	local self = setmetatable({}, Promise)
 
 	self.Status = "Pending"
-	self.ResolveCallbacks = {} :: { (...any) -> () | thread }
-	self.RejectCallbacks = {} :: { (Error: string) -> () | thread }
+	self.ResolveCallbacks = {} :: { (...any) -> () }
+	self.RejectCallbacks = {} :: { (Error: string) -> () }
 
 	self.Value = nil :: { any }?
 
@@ -136,8 +136,12 @@ function Promise.Await(self: Promise): (...any)
 	else
 		local Current = coroutine.running()
 
-		table.insert(self.ResolveCallbacks, Current)
-		table.insert(self.RejectCallbacks, Current)
+		local function Resume()
+			coroutine.resume(Current)
+		end
+
+		table.insert(self.ResolveCallbacks, Resume)
+		table.insert(self.RejectCallbacks, Resume)
 
 		coroutine.yield()
 

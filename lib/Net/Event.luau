@@ -12,7 +12,7 @@ local FR = Serdes.IdentifierAsync("FR")
 
 local Event = {}
 
-Event.Callbacks = {}
+Event.Callbacks = {} :: { [string]: ((...any) -> (...any))? }
 Event.Outgoing = {}
 
 if IS_CLIENT then
@@ -24,9 +24,11 @@ function Event.Listen()
 		Remote.OnClientEvent:Connect(function(Packets)
 			if Packets[FR] then
 				for EventId, Calls in Packets[FR] do
-					if Event.Callbacks[EventId] then
+					local Callback = Event.Callbacks[EventId]
+
+					if Callback then
 						for _, Call in Calls do
-							Spawn(Event.Callbacks[EventId], unpack(Call))
+							Spawn(Callback, unpack(Call))
 						end
 					end
 				end
@@ -62,9 +64,11 @@ function Event.Listen()
 		Remote.OnServerEvent:Connect(function(Player, Packets)
 			if Packets[FR] then
 				for EventId, Calls in Packets[FR] do
-					if Event.Callbacks[EventId] then
+					local Callback = Event.Callbacks[EventId]
+
+					if Callback then
 						for _, Call in Calls do
-							Spawn(Event.Callbacks[EventId], Player, unpack(Call))
+							Spawn(Callback, Player, unpack(Call))
 						end
 					end
 				end
@@ -186,7 +190,7 @@ function Event.Call(EventName: string, ...)
 	end)
 end
 
-function Event.SetCallback(EventName: string, Callback: (...any) -> any)
+function Event.SetCallback(EventName: string, Callback: ((...any) -> any)?)
 	Event.Callbacks[Serdes.IdentifierAsync(EventName)] = Callback
 end
 

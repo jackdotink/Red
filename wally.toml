@@ -1,7 +1,9 @@
 [package]
 name = "uncontained0/red"
-version = "0.1.0"
+version = "0.1.1"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
+license = "MIT"
+include = ["default.project.json", "lib", "LICENSE"]
 
 [dependencies]
