@@ -1,3 +1,4 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 local function MakeHeartbeatFunction(Clock: Clock)
@@ -44,7 +45,10 @@ function Clock.Advance(self: Clock, Delta: number)
 		local Skipped = math.floor(self.Delta / self.Interval)
 		self.Delta -= Skipped * self.Interval
 
-		warn("Clock is falling behind! Skipped " .. Skipped .. " intervals.")
+		if ReplicatedStorage:GetAttribute("RedDebug") then
+			warn("[Red.Clock] Clock is falling behind! Skipped " .. Skipped .. " intervals.")
+		end
+
 		return
 	end
 
