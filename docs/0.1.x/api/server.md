@@ -6,7 +6,7 @@ network from the server to the clients.
 ## Methods
 
 ### Fire
-`(self, EventName: string, Player, ...any) -> ()`
+`(self, EventName: string, Player: Player, ...any) -> ()`
 
 This fires the given event at the given player with the
 given arguments. The event will be sent at the next
@@ -31,7 +31,7 @@ MyNamespace:FireAll("MyEvent", "Hello", "World")
 ```
 
 ### FireAllExcept
-`(self, EventName: string, Player, ...any) -> ()`
+`(self, EventName: string, Player: Player, ...any) -> ()`
 
 This fires the given event at all players except the given
 player with the given arguments. The event will be sent at
@@ -62,7 +62,7 @@ end)
 ```
 
 ### Instance
-`(self) -> (Folder)`
+`(self, Player: Player?) -> (Folder)`
 
 This will get an instance that will replicate itself and
 all descendants to the client. This is useful for
@@ -79,15 +79,32 @@ state to the client.
 :::
 
 ```lua
-local MyNamespace = Red.Server("MyNamespace")
+-- You could use this to create a leaderboard structure 
+-- with every player's stats.
+local Net = Red.Server("Leaderboard")
 
 local function PlayerAdded(Player)
 	local PlayerFolder = Instance.new("Folder")
 	PlayerFolder.Name = Player.Name
 
-	PlayerFolder:SetAttribute("Score", 0)
-	PlayerFolder:SetAttribute("Money", 100)
+	PlayerFolder:SetAttribute("Kills", 0)
+	PlayerFolder:SetAttribute("Deaths", 0)
 
-	PlayerFolder.Parent = MyNamespace:Instance()
+	PlayerFolder.Parent = Net:Instance()
+end
+```
+
+If a player is passed to this method, then the instance
+returned will only replicate to that player. Anything
+replicated this way is not replicated to other players,
+ensuring security and saving bandwidth.
+
+```lua
+-- You could use this to replicate a player's inventory
+-- or tools.
+local Net = Red.Server("Inventory")
+
+local function GivePlayerTool(Player, Tool)
+	Tool:Clone().Parent = Net:Instance(Player)
 end
 ```

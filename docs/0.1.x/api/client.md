@@ -63,5 +63,19 @@ will yield forever.
 ```lua
 local MyNamespace = Red.Client("MyNamespace")
 
-local LocalPlayerData = MyNamespace:Instance()[Players.LocalPlayer.Name]
+local Leaderboard = MyNamespace:Instance()
+```
+
+### ClientInstance
+`(self) -> Instance`
+
+This returns the instance of the client namespace. If the
+corrosponding server namespace has not called the `Instance`
+method for this player, then the instance will not exist and
+this method will yield forever.
+
+```lua
+local MyNamespace = Red.Client("MyNamespace")
+
+local LocalPlayerData = MyNamespace:ClientInstance()
 ```
