@@ -3,14 +3,14 @@ local Spawn = require(script.Parent.Spawn)
 local Promise = {}
 Promise.__index = Promise
 
-function Promise.Promise(Callback: (Resolve: (Value: any) -> (), Reject: (Error: string) -> ()) -> ())
+function Promise.Promise(Callback: (Resolve: (...any) -> (), Reject: (...any) -> ()) -> ())
 	local self = setmetatable({}, Promise)
 
 	self.Status = "Pending"
-	self.OnResolve = {} :: { (Value: any) -> () }
-	self.OnReject = {} :: { (Error: string) -> () }
+	self.OnResolve = {} :: { (...any) -> () }
+	self.OnReject = {} :: { (...any) -> () }
 
-	self.Value = nil :: any
+	self.Value = {} :: { any }
 
 	self.Thread = nil :: thread?
 	self.Thread = coroutine.create(function()
@@ -18,8 +18,8 @@ function Promise.Promise(Callback: (Resolve: (Value: any) -> (), Reject: (Error:
 			(self :: any):_Reject(Error)
 		end, function(...)
 			(self :: any):_Resolve(...)
-		end, function(Error: string)
-			(self :: any):_Reject(Error)
+		end, function(...)
+			(self :: any):_Reject(...)
 		end)
 	end)
 
@@ -28,40 +28,40 @@ function Promise.Promise(Callback: (Resolve: (Value: any) -> (), Reject: (Error:
 	return self
 end
 
-Promise.new = Promise.Promise :: (Callback: (Resolve: (...any) -> (), Reject: (Error: string) -> ()) -> ()) -> Promise
+Promise.new = Promise.Promise :: (Callback: (Resolve: (...any) -> (), Reject: (...any) -> ()) -> ()) -> Promise
 
-function Promise.Resolve(Value: any): Promise
+function Promise.Resolve(...: any): Promise
 	local self = setmetatable({}, Promise)
 
 	self.Status = "Resolved"
-	self.OnResolve = {} :: { (Value: any) -> () }
-	self.OnReject = {} :: { (Error: string) -> () }
-	self.Value = Value
+	self.OnResolve = {} :: { (...any) -> () }
+	self.OnReject = {} :: { (...any) -> () }
+	self.Value = { ... } :: { any }
 	self.Thread = nil :: thread?
 
 	return self
 end
 
-function Promise.Reject(Error: string): Promise
+function Promise.Reject(...: any): Promise
 	local self = setmetatable({}, Promise)
 
 	self.Status = "Rejected"
-	self.OnResolve = {} :: { (Value: any) -> () }
-	self.OnReject = {} :: { (Error: string) -> () }
-	self.Value = Error
+	self.OnResolve = {} :: { (...any) -> () }
+	self.OnReject = {} :: { (...any) -> () }
+	self.Value = { ... } :: { any }
 	self.Thread = nil :: thread?
 
 	return self
 end
 
-function Promise._Resolve(self: Promise, Value: any)
+function Promise._Resolve(self: Promise, ...: any)
 	assert(self.Status == "Pending", "Cannot resolve a promise that is not pending.")
 
 	self.Status = "Resolved"
-	self.Value = Value
+	self.Value = { ... }
 
 	for _, Callback in self.OnResolve do
-		Spawn(Callback, Value)
+		Spawn(Callback, ...)
 	end
 
 	if self.Thread then
@@ -69,14 +69,14 @@ function Promise._Resolve(self: Promise, Value: any)
 	end
 end
 
-function Promise._Reject(self: Promise, Error: string)
+function Promise._Reject(self: Promise, ...: any)
 	assert(self.Status == "Pending", "Cannot reject a promise that is not pending.")
 
 	self.Status = "Rejected"
-	self.Value = { Error }
+	self.Value = { ... }
 
 	for _, Callback in self.OnReject do
-		Spawn(Callback, Error)
+		Spawn(Callback, ...)
 	end
 
 	if self.Thread then
@@ -84,9 +84,9 @@ function Promise._Reject(self: Promise, Error: string)
 	end
 end
 
-function Promise.Then(self: Promise, OnResolve: ((Value: any) -> (any))?, OnReject: ((Error: string) -> (any))?)
+function Promise.Then(self: Promise, OnResolve: ((...any) -> ...any)?, OnReject: ((...any) -> ...any)?): Promise
 	return Promise.Promise(function(Resolve, Reject)
-		local function PromiseResolutionProcedure(Value: Promise | any)
+		local function PromiseResolutionProcedure(Value: Promise | any, ...: any)
 			if type(Value) == "table" and getmetatable(Value) == Promise then
 				if Value.Status == "Pending" then
 					table.insert(Value.OnResolve, Resolve)
@@ -97,59 +97,43 @@ function Promise.Then(self: Promise, OnResolve: ((Value: any) -> (any))?, OnReje
 					Reject(Value.Value)
 				end
 			else
-				Resolve(Value)
+				Resolve(Value, ...)
 			end
 		end
 
 		if self.Status == "Pending" then
 			if OnResolve then
-				table.insert(self.OnResolve, function(Value)
-					local _, NewValue = xpcall(OnResolve, function(Error)
-						Reject(Error)
-					end, Value)
-	
-					PromiseResolutionProcedure(NewValue)
+				table.insert(self.OnResolve, function(...)
+					PromiseResolutionProcedure(OnResolve(...))
 				end)
 			else
 				table.insert(self.OnResolve, PromiseResolutionProcedure)
 			end
-	
+
 			if OnReject then
-				table.insert(self.OnReject, function(Value)
-					local _, NewValue = xpcall(OnReject, function(Error)
-						Reject(Error)
-					end, Value)
-	
-					PromiseResolutionProcedure(NewValue)
+				table.insert(self.OnReject, function(...)
+					PromiseResolutionProcedure(OnReject(...))
 				end)
 			else
 				table.insert(self.OnReject, Reject)
 			end
 		elseif self.Status == "Resolved" then
 			if OnResolve then
-				local _, NewValue = xpcall(OnResolve, function(Error)
-					Reject(Error)
-				end, self.Value)
-	
-				PromiseResolutionProcedure(NewValue)
+				PromiseResolutionProcedure(OnResolve(unpack(self.Value)))
 			else
-				Resolve(self.Value)
+				Resolve(unpack(self.Value))
 			end
 		elseif self.Status == "Rejected" then
 			if OnReject then
-				local _, NewValue = xpcall(OnReject, function(Error)
-					Reject(Error)
-				end, self.Value)
-	
-				PromiseResolutionProcedure(NewValue)
+				PromiseResolutionProcedure(OnReject(unpack(self.Value)))
 			else
-				Reject(self.Value)
+				Reject(unpack(self.Value))
 			end
 		end
 	end)
 end
 
-function Promise.Catch(self: Promise, RejectCallback: (Error: string) -> ())
+function Promise.Catch(self: Promise, RejectCallback: (...any) -> ())
 	return self:Then(nil, RejectCallback)
 end
 
@@ -163,12 +147,11 @@ function Promise.Finally(self: Promise, FinallyCallback: () -> ())
 	end)
 end
 
-
-function Promise.Await(self: Promise): (...any)
+function Promise.Await(self: Promise): ...any
 	if self.Status == "Resolved" then
-		return unpack(self.Value :: { any })
+		return unpack(self.Value)
 	elseif self.Status == "Rejected" then
-		return error(unpack(self.Value :: { any }))
+		return error(unpack(self.Value))
 	else
 		local Current = coroutine.running()
 
@@ -182,13 +165,13 @@ function Promise.Await(self: Promise): (...any)
 		coroutine.yield()
 
 		if self.Status == "Resolved" then
-			return unpack(self.Value :: { any })
+			return unpack(self.Value)
 		else
-			return error(unpack(self.Value :: { any }))
+			return error(unpack(self.Value))
 		end
 	end
 end
 
-export type Promise = typeof(Promise.Promise(table.unpack(...)))
+export type Promise = typeof(Promise.Promise(...))
 
 return Promise
