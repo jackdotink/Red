@@ -13,7 +13,7 @@ local function Yielder()
 	end
 end
 
-return function(fn: (...any) -> (), ...)
+return function<T...>(fn: (T...) -> (), ...: T...)
 	if not FreeThread then
 		FreeThread = coroutine.create(Yielder)
 		coroutine.resume(FreeThread :: any)

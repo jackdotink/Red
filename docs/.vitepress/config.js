@@ -1,39 +1,33 @@
 function nav() {
 	return [
 		{ text: 'Version', items: [
-			{ text: '0.1.x', link: '/0.1.x/guide/what-is-red'}
-		]}
+			{ text: '1.0', link: '/1.0/guide/what-is-red' },
+		]},
+		{ text: 'Changelog', link: '/changelog' },
 	]
 }
 
 function sidebar() {
 	return {
-		'/0.1.x/': [
+		'/1.0/': [
 			{
 				text: 'Guide',
 				items: [
-					{ text: 'What is Red?', link: '/0.1.x/guide/what-is-red' },
-					{ text: 'Getting Started', link: '/0.1.x/guide/getting-started' },
-					{ text: 'Namespaces', link: '/0.1.x/guide/namespaces' },
+					{ text: 'What is Red?', link: '/1.0/guide/what-is-red' },
+					{ text: 'Getting Started', link: '/1.0/guide/getting-started' },
+					{ text: 'Namespaces', link: '/1.0/guide/namespaces' },
+					{ text: 'System Architecture', link: '/1.0/guide/systems' },
 				]
 			},
-
 			{
-				text: 'API',
+				text: 'Reference',
 				items: [
-					{ text: 'Red', link: '/0.1.x/api/red' },
-					{ text: 'Server', link: '/0.1.x/api/server' },
-					{ text: 'Client', link: '/0.1.x/api/client' },
-				]
-			},
-
-			{
-				text: 'Util',
-				items: [
-					{ text: 'Signal', link: '/0.1.x/util/signal' },
-					{ text: 'Promise', link: '/0.1.x/util/promise' },
-					{ text: 'Spawn', link: '/0.1.x/util/spawn' },
-					{ text: 'Clock', link: '/0.1.x/util/clock' },
+					{ text: 'Red', link: '/1.0/api/Red' },
+					{ text: 'Server', link: '/1.0/api/Server' },
+					{ text: 'Client', link: '/1.0/api/Client' },
+					{ text: 'Promise', link: '/1.0/api/Promise' },
+					{ text: 'Signal', link: '/1.0/api/Signal' },
+					{ text: 'Clock', link: '/1.0/api/Clock' },
 				]
 			}
 		]

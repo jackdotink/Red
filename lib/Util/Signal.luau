@@ -1,78 +1,74 @@
 local Promise = require(script.Parent.Promise)
 local Spawn = require(script.Parent.Spawn)
 
-local Connection = {}
-Connection.__index = Connection
+type SignalNode<T...> = {
+	Next: SignalNode<T...>?,
+	Callback: (T...) -> (),
+}
 
-function Connection.Connection(Signal: Signal, Callback: (...any) -> ())
-	return setmetatable({
-		Signal = Signal,
-		Callback = Callback,
-		Next = nil :: Connection?,
-	}, Connection)
-end
+export type Signal<T...> = {
+	Root: SignalNode<T...>?,
 
-Connection.new = Connection.Connection :: (Signal: Signal, Callback: (...any) -> ()) -> Connection
-
-function Connection.Disconnect(self: Connection)
-	if self.Signal.Root == self then
-		self.Signal.Root = self.Next
-	else
-		local Current = self.Signal.Root
-
-		while Current do
-			if Current.Next == self then
-				Current.Next = self.Next
-				break
-			end
-
-			Current = Current.Next
-		end
-	end
-end
-
-export type Connection = typeof(Connection.Connection(table.unpack(...)))
+	Connect: (self: Signal<T...>, Callback: (T...) -> ()) -> () -> (),
+	Wait: (self: Signal<T...>) -> Promise.Promise,
+	Fire: (self: Signal<T...>, T...) -> (),
+	DisconnectAll: (self: Signal<T...>) -> (),
+}
 
 local Signal = {}
 Signal.__index = Signal
 
-function Signal.Signal()
+function Signal.new<T...>(): Signal<T...>
 	return setmetatable({
-		Root = nil :: Connection?,
-	}, Signal)
+		Root = nil,
+	}, Signal) :: any
 end
 
-Signal.new = Signal.Signal :: () -> Signal
+function Signal.Connect<T...>(self: Signal<T...>, Callback: (T...) -> ()): () -> ()
+	local Node = {
+		Next = self.Root,
+		Callback = Callback,
+	}
 
-function Signal.Connect(self: Signal, Callback: (...any) -> ())
-	local Connection = Connection.new(self, Callback)
+	self.Root = Node
 
-	Connection.Next = self.Root
-	self.Root = Connection
-
-	return Connection
-end
-
-function Signal.Fire(self: Signal, ...)
-	local Current = self.Root
-
-	while Current do
-		Spawn(Current.Callback, ...)
-
-		Current = Current.Next
+	return function()
+		if self.Root == Node then
+			self.Root = Node.Next
+		else
+			local Current = self.Root
+			while Current do
+				if Current.Next == Node then
+					Current.Next = Node.Next
+					break
+				end
+				Current = Current.Next
+			end
+		end
 	end
 end
 
-function Signal.Wait(self: Signal)
+function Signal.Wait<T...>(self: Signal<T...>): Promise.Promise
 	return Promise.new(function(Resolve)
-		local Connection
-		Connection = self:Connect(function(...)
-			Connection:Disconnect()
-			Resolve(...)
+		local Disconnect
+
+		Disconnect = self:Connect(function(...)
+			Disconnect()
+			Resolve(... :: any)
 		end)
 	end)
 end
 
-export type Signal = typeof(Signal.Signal(table.unpack(...)))
+function Signal.Fire<T...>(self: Signal<T...>, ...: T...)
+	local Current = self.Root
+	while Current do
+		Spawn(Current.Callback, ...)
+		Current = Current.Next
+	end
+end
+
+function Signal.DisconnectAll<T...>(self: Signal<T...>)
+	self.Root = nil
+end
 
 return Signal

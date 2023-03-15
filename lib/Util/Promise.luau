@@ -58,30 +58,26 @@ function Promise._Resolve(self: Promise, ...: any)
 	assert(self.Status == "Pending", "Cannot resolve a promise that is not pending.")
 
 	self.Status = "Resolved"
-	self.Value = { ... }
+	self.Value = table.pack(...)
 
 	for _, Callback in self.OnResolve do
 		Spawn(Callback, ...)
 	end
 
-	if self.Thread then
-		task.cancel(self.Thread)
-	end
+	task.defer(task.cancel, self.Thread :: thread)
 end
 
 function Promise._Reject(self: Promise, ...: any)
 	assert(self.Status == "Pending", "Cannot reject a promise that is not pending.")
 
 	self.Status = "Rejected"
-	self.Value = { ... }
+	self.Value = table.pack(...)
 
 	for _, Callback in self.OnReject do
 		Spawn(Callback, ...)
 	end
 
-	if self.Thread then
-		task.cancel(self.Thread)
-	end
+	task.defer(task.cancel, self.Thread :: thread)
 end
 
 function Promise.Then(self: Promise, OnResolve: ((...any) -> ...any)?, OnReject: ((...any) -> ...any)?): Promise
@@ -133,16 +129,16 @@ function Promise.Then(self: Promise, OnResolve: ((...any) -> ...any)?, OnReject:
 	end)
 end
 
-function Promise.Catch(self: Promise, RejectCallback: (...any) -> ())
-	return self:Then(nil, RejectCallback)
+function Promise.Catch(self: Promise, OnReject: (...any) -> ())
+	return self:Then(nil, OnReject)
 end
 
-function Promise.Finally(self: Promise, FinallyCallback: () -> ())
+function Promise.Finally(self: Promise, Finally: () -> ())
 	return self:Then(function(...)
-		FinallyCallback()
+		Finally()
 		return ...
 	end, function(Error)
-		FinallyCallback()
+		Finally()
 		error(Error)
 	end)
 end

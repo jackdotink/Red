@@ -4,23 +4,17 @@
 
 <hr />
 
-Red is a networking library for Roblox that is simple, fast,
-and powerful. It is designed with performance and ease of
-use in mind.
+Red is a networking library for Roblox that is simple, fast, and powerful. It is designed with performance and ease of use in mind.
 
 ## Features
 
-- **Red is a networking library.** It doesn't force you into
-using some structure or pattern with it.
+- **Red is a networking library.** It doesn't force you into using some structure or pattern with it.
 
-- **Red is fast.** It uses the same methods as BridgeNet to
-reduce bandwidth usage.
+- **Red is fast.** It uses the same methods as BridgeNet to reduce bandwidth usage.
 
-- **Red is functional.** The only objects that Red uses
-are namespaces, everything else is as function as can be.
+- **Red is functional.** The only objects that Red uses are namespaces, everything else is as function as can be.
 
-- **Red is typed.** Red is fully typed in luau, so you can
-get full intellisense support in your IDE.
+- **Red is typed.** Red is fully typed in luau, so you can get full intellisense support in your IDE.
 
 ## Documentation
 

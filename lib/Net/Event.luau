@@ -12,7 +12,7 @@ local FR = Serdes.IdentifierAsync("FR")
 
 local Event = {}
 
-Event.Callbacks = {} :: { [string]: ((...any) -> (...any))? }
+Event.Callbacks = {} :: { [string]: ((...any) -> ...any)? }
 Event.Outgoing = {}
 
 if IS_CLIENT then
@@ -85,14 +85,14 @@ function Event.Listen()
 								if Event.Outgoing[Player] == nil then
 									Event.Outgoing[Player] = {}
 								end
-				
+
 								if Event.Outgoing[Player][CL] == nil then
 									Event.Outgoing[Player][CL] = {}
 								end
-								
+
 								table.insert(Event.Outgoing[Player][CL], {
 									CallId,
-									unpack(Return)
+									unpack(Return),
 								})
 							end)
 						end
@@ -100,7 +100,7 @@ function Event.Listen()
 						if Event.Outgoing[Player] == nil then
 							Event.Outgoing[Player] = {}
 						end
-		
+
 						if Event.Outgoing[Player][CL] == nil then
 							Event.Outgoing[Player][CL] = {}
 						end

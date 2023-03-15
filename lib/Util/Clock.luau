@@ -2,7 +2,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 local function MakeHeartbeatFunction(Clock: Clock)
-	return function (Delta)
+	return function(Delta)
 		Clock:Advance(Delta)
 	end
 end
@@ -58,6 +58,6 @@ function Clock.Advance(self: Clock, Delta: number)
 	end
 end
 
-export type Clock = typeof(Clock.Clock(table.unpack(...)))
+export type Clock = typeof(Clock.Clock(...))
 
 return Clock
