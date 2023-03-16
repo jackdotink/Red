@@ -16,7 +16,7 @@ Red is available as a Rojo project through [Wally](https://wally.run). Add Red t
 
 ```toml [wally.toml]
 [dependencies]
-Red = "uncontained0/Red@1.0.0"
+Red = "uncontained0/red@1.0.0"
 ```
 
 :::
