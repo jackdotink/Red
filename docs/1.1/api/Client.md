@@ -20,7 +20,7 @@ This method has the same data limits as [`RemoteEvent`](https://developer.roblox
 :::
 
 :::warning Yielding Behavior
-This method will only yield if the event identifier is not loaded on the client. This will not yield for a long period of time unless the event is not registered on the server.
+This method will only yield if the event identifier is not loaded on the client. This will not yield for a long period of time unless the event is not registered on the server, if this is the case a warning will be thrown.
 :::
 
 ```lua
@@ -47,7 +47,7 @@ This method has the same data limits as [`RemoteEvent`](https://developer.roblox
 :::
 
 :::warning Yielding Behavior
-This method will only yield if the event identifier is not loaded on the client. This will not yield for a long period of time unless the event is not registered on the server.
+This method will only yield if the event identifier is not loaded on the client. This will not yield for a long period of time unless the event is not registered on the server, if this is the case a warning will be thrown.
 :::
 
 ```lua

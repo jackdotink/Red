@@ -11,6 +11,7 @@ return {
 	Server = Net.Server,
 	Client = Net.Client,
 
+	Collection = require(script.Util.Collection),
 	Promise = require(script.Util.Promise),
 	Signal = require(script.Util.Signal),
 	Clock = require(script.Util.Clock),

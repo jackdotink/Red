@@ -9,7 +9,7 @@ hero:
   actions:
     - theme: brand
       text: Get Started
-      link: /1.0/guide/what-is-red
+      link: /1.1/guide/what-is-red
     - theme: alt
       text: View on GitHub
       link: https://github.com/uncontained0/Red

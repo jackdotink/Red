@@ -27,7 +27,15 @@ function Serdes.Identifier(Name: string)
 			if Event:GetAttribute(Name) ~= nil then
 				Resolve(Event:GetAttribute(Name))
 			else
+				local Thread = task.delay(
+					5,
+					warn,
+					`[Red.Serdes]: Retrieving identifier exceeded 5 seconds. Make sure '{Name}' is registered on the server.`
+				)
+
 				Event:GetAttributeChangedSignal(Name):Once(function()
+					task.cancel(Thread)
+
 					Resolve(Event:GetAttribute(Name))
 				end)
 			end
