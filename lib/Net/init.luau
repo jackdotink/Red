@@ -127,7 +127,7 @@ end
 Client.new = Client.Client
 
 function Client.Fire(self: Client, EventName: string, ...)
-	Event.FireServer(self.Name .. "_" .. EventName, ...)
+	return Event.FireServer(self.Name .. "_" .. EventName, ...)
 end
 
 function Client.Call(self: Client, EventName: string, ...)
@@ -135,7 +135,7 @@ function Client.Call(self: Client, EventName: string, ...)
 end
 
 function Client.On(self: Client, EventName: string, Callback: ((...any) -> ...any)?)
-	Event.SetCallback(self.Name .. "_" .. EventName, Callback)
+	return Event.SetCallback(self.Name .. "_" .. EventName, Callback)
 end
 
 function Client.Folder(self: Client)

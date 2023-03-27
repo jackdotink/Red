@@ -150,17 +150,19 @@ end
 function Event.FireServer(EventName: string, ...)
 	assert(IS_CLIENT, "Event.FireServer can only be called on the client")
 
-	local EventId = Serdes.IdentifierAsync(EventName)
+	local Args = { ... }
 
-	if Event.Outgoing[FR] == nil then
-		Event.Outgoing[FR] = {}
-	end
-
-	if Event.Outgoing[FR][EventId] == nil then
-		Event.Outgoing[FR][EventId] = {}
-	end
-
-	table.insert(Event.Outgoing[FR][EventId], { ... })
+	return Serdes.Identifier(EventName):Then(function(EventId)
+		if Event.Outgoing[FR] == nil then
+			Event.Outgoing[FR] = {}
+		end
+	
+		if Event.Outgoing[FR][EventId] == nil then
+			Event.Outgoing[FR][EventId] = {}
+		end
+	
+		table.insert(Event.Outgoing[FR][EventId], Args)
+	end)
 end
 
 function Event.Call(EventName: string, ...)
@@ -191,7 +193,9 @@ function Event.Call(EventName: string, ...)
 end
 
 function Event.SetCallback(EventName: string, Callback: ((...any) -> any)?)
-	Event.Callbacks[Serdes.IdentifierAsync(EventName)] = Callback
+	return Serdes.Identifier(EventName):Then(function(EventId)
+		Event.Callbacks[EventId] = Callback
+	end)
 end
 
 return Event
