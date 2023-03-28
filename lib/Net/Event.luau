@@ -1,5 +1,8 @@
-local Remote = game:GetService("ReplicatedStorage"):FindFirstChild("RedEvent") :: RemoteEvent
-local IS_CLIENT = game:GetService("RunService"):IsClient()
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Remote = ReplicatedStorage:FindFirstChild("RedEvent") :: RemoteEvent
+local IS_CLIENT = RunService:IsClient()
 
 local Serdes = require(script.Parent.Serdes)
 
@@ -28,7 +31,11 @@ function Event.Listen()
 
 					if Callback then
 						for _, Call in Calls do
-							Spawn(Callback, unpack(Call))
+							if type(Call) == "table" then
+								Spawn(Callback, unpack(Call))
+							else
+								Spawn(Callback, Call)
+							end
 						end
 					end
 				end
@@ -68,7 +75,11 @@ function Event.Listen()
 
 					if Callback then
 						for _, Call in Calls do
-							Spawn(Callback, Player, unpack(Call))
+							if type(Call) == "table" then
+								Spawn(Callback, Player, unpack(Call))
+							else
+								Spawn(Callback, Player, Call)
+							end
 						end
 					end
 				end
@@ -79,9 +90,6 @@ function Event.Listen()
 					if Event.Callbacks[EventId] then
 						for _, Call in Calls do
 							Spawn(function()
-								local CallId = table.remove(Call, 1)
-								local Return = table.pack(pcall(Event.Callbacks[EventId] :: any, Player, unpack(Call)))
-
 								if Event.Outgoing[Player] == nil then
 									Event.Outgoing[Player] = {}
 								end
@@ -90,10 +98,19 @@ function Event.Listen()
 									Event.Outgoing[Player][CL] = {}
 								end
 
-								table.insert(Event.Outgoing[Player][CL], {
-									CallId,
-									unpack(Return),
-								})
+								if type(Call) == "table" then
+									local CallId = table.remove(Call, 1)
+
+									table.insert(Event.Outgoing[Player][CL], {
+										CallId,
+										pcall(Event.Callbacks[EventId] :: any, Player, unpack(Call)),
+									})
+								else
+									table.insert(Event.Outgoing[Player][CL], {
+										Call,
+										pcall(Event.Callbacks[EventId] :: any, Player, unpack(Call)),
+									})
+								end
 							end)
 						end
 					else
@@ -117,7 +134,7 @@ function Event.Listen()
 			end
 		end)
 
-		Clock.new(1 / 60, function()
+		RunService.Heartbeat:Connect(function()
 			for Player, Packets in Event.Outgoing do
 				Remote:FireClient(Player, Packets)
 			end
@@ -144,7 +161,11 @@ function Event.FireClient(Player: Player, EventName: string, ...)
 		Event.Outgoing[Player][FR][EventId] = {}
 	end
 
-	table.insert(Event.Outgoing[Player][FR][EventId], { ... })
+	if select("#", ...) == 1 and type(...) ~= "table" then
+		table.insert(Event.Outgoing[Player][FR][EventId], ...)
+	else
+		table.insert(Event.Outgoing[Player][FR][EventId], { ... })
+	end
 end
 
 function Event.FireServer(EventName: string, ...)
@@ -161,7 +182,11 @@ function Event.FireServer(EventName: string, ...)
 			Event.Outgoing[FR][EventId] = {}
 		end
 	
-		table.insert(Event.Outgoing[FR][EventId], Args)
+		if #Args == 1 and type(Args[1]) ~= "table" then
+			table.insert(Event.Outgoing[FR][EventId], Args[1])
+		else
+			table.insert(Event.Outgoing[FR][EventId], Args)
+		end
 	end)
 end
 
@@ -183,7 +208,12 @@ function Event.Call(EventName: string, ...)
 		end
 
 		table.insert(Args, 1, CallId)
-		table.insert(Event.Outgoing[CL][EventId], Args)
+
+		if #Args == 1 then
+			table.insert(Event.Outgoing[CL][EventId], Args[1])
+		else
+			table.insert(Event.Outgoing[CL][EventId], Args)
+		end
 
 		Event.ActiveCalls[CallId] = {
 			Resolve = Resolve,
