@@ -1,0 +1,19 @@
+{
+	"name": "Test",
+	"tree": {
+		"$className": "DataModel",
+		"ReplicatedStorage": {
+			"Red": {
+				"$path": "lib"
+			}
+		},
+		"ServerScriptService": {
+			"$path": "test/server"
+		},
+		"StarterPlayer": {
+			"StarterPlayerScripts": {
+				"$path": "test/client"
+			}
+		}
+	}
+}
