@@ -134,7 +134,7 @@ function Client.Call(self: Client, EventName: string, ...)
 	return Event.Call(self.Name .. "_" .. EventName, ...)
 end
 
-function Client.On(self: Client, EventName: string, Callback: ((...any) -> ...any)?)
+function Client.On(self: Client, EventName: string, Callback: ((...any) -> ())?)
 	return Event.SetCallback(self.Name .. "_" .. EventName, Callback)
 end
 
