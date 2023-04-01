@@ -79,7 +79,7 @@ function Server.FireWithFilter(self: Server, Filter: (Player) -> boolean, EventN
 	end
 end
 
-function Server.On(self: Server, EventName: string, Callback: ((Player, ...any) -> ...any)?)
+function Server.On(self: Server, EventName: string, Callback: ((Player, ...any) -> any)?)
 	Event.SetCallback(self.Name .. "_" .. EventName, Callback)
 end
 
@@ -134,7 +134,7 @@ function Client.Call(self: Client, EventName: string, ...)
 	return Event.Call(self.Name .. "_" .. EventName, ...)
 end
 
-function Client.On(self: Client, EventName: string, Callback: ((...any) -> ...any)?)
+function Client.On(self: Client, EventName: string, Callback: ((...any) -> any)?)
 	return Event.SetCallback(self.Name .. "_" .. EventName, Callback)
 end
 
