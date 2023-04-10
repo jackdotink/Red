@@ -1,0 +1,1 @@
+import{_ as s,c as a,o as n,N as e}from"./chunks/framework.0799945b.js";const A=JSON.parse('{"title":"Namespaces","description":"","frontmatter":{},"headers":[],"relativePath":"1.1/guide/namespaces.md"}'),l={name:"1.1/guide/namespaces.md"},o=e("",22),p=[o];function t(c,r,i,y,D,C){return n(),a("div",null,p)}const d=s(l,[["render",t]]);export{A as __pageData,d as default};
