@@ -179,13 +179,12 @@ end
 
 function Net.Client(Name: string): Client
 	assert(RunService:IsClient(), "Net.Client can only be used on the client")
-
-	if Net.ClientNamespaceList[Name] then
-		return Net.ClientNamespaceList[Name]
-	else
+	
+	if Net.ClientNamespaceList[Name] == nil then
 		Net.ClientNamespaceList[Name] = Client.Client(Name)
-		return Net.ClientNamespaceList[Name]
 	end
+
+	return Net.ClientNamespaceList[Name]
 end
 
 function Net.Identifier(Name: string)
