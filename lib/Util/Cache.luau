@@ -1,6 +1,6 @@
 local Clock = require(script.Parent.Clock)
 
-return function<K, A..., V...>(Interval: number, Callback: (K, A...) -> V...): (K, A...) -> V...
+return function<K, V...>(Interval: number, Callback: (K) -> V...): (K) -> V...
 	local Cached = {}
 
 	local CacheClock
@@ -13,18 +13,18 @@ return function<K, A..., V...>(Interval: number, Callback: (K, A...) -> V...): (
 	CacheClock:Pause()
 
 	return (
-		function(Key: K, ...)
+		function(Key: K)
 			local Value = Cached[Key]
 
 			if Value then
 				return unpack(Value)
 			else
-				Value = { (Callback :: any)(Key, ...) }
+				Value = { Callback(Key) }
 				Cached[Key] = Value
 				CacheClock:Resume()
 
 				return unpack(Value)
 			end
 		end :: any
-	) :: (K, A...) -> V...
+	) :: (K) -> V...
 end
