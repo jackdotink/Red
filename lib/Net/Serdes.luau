@@ -13,7 +13,7 @@ Serdes.NextOT = 0
 function Serdes.RegisterIdentifier(Name: string)
 	assert(RunService:IsServer(), "RegisterIdentifier can only be called on the server")
 
-	local Id = string.pack("H", Serdes.NextId)
+	local Id = utf8.char(Serdes.NextId)
 	Serdes.NextId += 1
 
 	Event:SetAttribute(Name, Id)
@@ -56,7 +56,11 @@ end
 function Serdes.OneTime()
 	Serdes.NextOT += 1
 
-	return string.pack("H", Serdes.NextOT)
+	if Serdes.NextOT == 0xFFFF + 1 then
+		Serdes.NextOT = 0
+	end
+
+	return utf8.char(Serdes.NextOT)
 end
 
 return Serdes
