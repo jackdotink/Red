@@ -20,39 +20,53 @@ if IS_CLIENT then
 end
 
 function Event.Listen()
+	debug.setmemorycategory("Red.Listen")
+
 	if IS_CLIENT then
-		Remote.OnClientEvent:Connect(function(IncomingFire, IncomingCall)
-			if IncomingFire then
-				for EventId, Calls in IncomingFire do
-					if #EventId == 2 then
-						local Callback = Event.Callbacks[EventId]
+		Remote.OnClientEvent:Connect(function(SingleFire, MultipleFire, IncomingCall)
+			debug.profilebegin("Red.Listen.Incoming")
 
-						if Callback then
-							for _, Call in Calls do
-								if type(Call) == "table" then
-									Spawn(Callback, unpack(Call))
-								else
-									Spawn(Callback, Call)
-								end
-							end
+			if SingleFire then
+				debug.profilebegin("Red.Listen.Incoming.SingleFire")
+
+				for EventId, Call in SingleFire do
+					local Callback = Event.Callbacks[EventId]
+
+					if Callback then
+						if type(Call) == "table" then
+							Spawn(Callback, unpack(Call))
+						else
+							Spawn(Callback, Call)
 						end
-					else
-						local Ident = string.sub(EventId, 2, 3)
+					end
+				end
 
-						local Callback = Event.Callbacks[Ident]
+				debug.profileend()
+			end
 
-						if Callback then
-							if type(Calls) == "table" then
-								Spawn(Callback, unpack(Calls))
+			if MultipleFire then
+				debug.profilebegin("Red.Listen.Incoming.Fire")
+
+				for EventId, Calls in MultipleFire do
+					local Callback = Event.Callbacks[EventId]
+
+					if Callback then
+						for _, Call in Calls do
+							if type(Call) == "table" then
+								Spawn(Callback, unpack(Call))
 							else
-								Spawn(Callback, Calls)
+								Spawn(Callback, Call)
 							end
 						end
 					end
 				end
+
+				debug.profileend()
 			end
 
 			if IncomingCall then
+				debug.profilebegin("Red.Listen.Incoming.Call")
+
 				for _, Call in IncomingCall do
 					local CallId = table.remove(Call, 1)
 					local Success = table.remove(Call, 1)
@@ -67,57 +81,83 @@ function Event.Listen()
 						Event.ActiveCalls[CallId] = nil
 					end
 				end
+
+				debug.profileend()
 			end
+
+			debug.profileend()
 		end)
 
 		Clock.new(1 / 60, function()
+			debug.profilebegin("Red.Listen.Outgoing")
+
 			if not next(Event.Outgoing) then
 				return
 			end
 
+			local SingleFire = {}
+
 			for EventId, Calls in Event.Outgoing[1] do
 				if #Calls == 1 then
-					Event.Outgoing[1]["\001" .. EventId] = Calls[1]
+					if SingleFire[EventId] == nil then
+						SingleFire[EventId] = {}
+					end
+
+					table.insert(SingleFire[EventId], Calls[1])
 					Event.Outgoing[1][EventId] = nil
 				end
 			end
 
-			Remote:FireServer(Event.Outgoing[1], Event.Outgoing[2])
+			Remote:FireServer(if #SingleFire == 0 then nil else SingleFire, Event.Outgoing[1], Event.Outgoing[2])
 			table.clear(Event.Outgoing)
+
+			debug.profileend()
 		end)
 	else
-		Remote.OnServerEvent:Connect(function(Player, IncomingFire, IncomingCall)
-			if IncomingFire then
-				for EventId, Calls in IncomingFire do
-					if #EventId == 2 then
-						local Callback = Event.Callbacks[EventId]
+		Remote.OnServerEvent:Connect(function(Player, SingleFire, MultipleFire, IncomingCall)
+			debug.profilebegin("Red.Listen.Incoming")
 
-						if Callback then
-							for _, Call in Calls do
-								if type(Call) == "table" then
-									Spawn(Callback, Player, unpack(Call))
-								else
-									Spawn(Callback, Player, Call)
-								end
-							end
+			if SingleFire then
+				debug.profilebegin("Red.Listen.Incoming.SingleFire")
+
+				for EventId, Call in SingleFire do
+					local Callback = Event.Callbacks[EventId]
+
+					if Callback then
+						if type(Call) == "table" then
+							Spawn(Callback, Player, unpack(Call))
+						else
+							Spawn(Callback, Player, Call)
 						end
-					else
-						local Ident = string.sub(EventId, 2, 3)
+					end
+				end
 
-						local Callback = Event.Callbacks[Ident]
+				debug.profileend()
+			end
 
-						if Callback then
-							if type(Calls) == "table" then
-								Spawn(Callback, Player, unpack(Calls))
+			if MultipleFire then
+				debug.profilebegin("Red.Listen.Incoming.MultipleFire")
+
+				for EventId, Calls in MultipleFire do
+					local Callback = Event.Callbacks[EventId]
+
+					if Callback then
+						for _, Call in Calls do
+							if type(Call) == "table" then
+								Spawn(Callback, Player, unpack(Call))
 							else
-								Spawn(Callback, Player, Calls)
+								Spawn(Callback, Player, Call)
 							end
 						end
 					end
 				end
+
+				debug.profileend()
 			end
 
 			if IncomingCall then
+				debug.profilebegin("Red.Listen.Incoming.Call")
+
 				for EventId, Calls in IncomingCall do
 					if Event.Callbacks[EventId] then
 						for _, Call in Calls do
@@ -156,22 +196,36 @@ function Event.Listen()
 						end
 					end
 				end
+
+				debug.profileend()
 			end
+
+			debug.profileend()
 		end)
 
 		RunService.Heartbeat:Connect(function()
+			debug.profilebegin("Red.Listen.Outgoing")
+
 			for Player, Packets in Event.Outgoing do
+				local SingleCall = {}
+
 				for EventId, Calls in Packets[1] do
 					if #Calls == 1 then
-						Packets[1]["\001" .. EventId] = Calls[1]
+						if SingleCall[EventId] == nil then
+							SingleCall[EventId] = {}
+						end
+
+						table.insert(SingleCall[EventId], Calls[1])
 						Packets[1][EventId] = nil
 					end
 				end
 
-				Remote:FireClient(Player, Packets[1], Packets[2])
+				Remote:FireClient(Player, if #SingleCall == 0 then nil else SingleCall, Packets[1], Packets[2])
 			end
 
 			table.clear(Event.Outgoing)
+
+			debug.profileend()
 		end)
 	end
 end
@@ -221,7 +275,7 @@ function Event.FireServer(EventName: string, ...)
 		if Event.Outgoing[1] == nil then
 			Event.Outgoing[1] = {}
 		end
-	
+
 		if Event.Outgoing[1][EventId] == nil then
 			Event.Outgoing[1][EventId] = {}
 		end
