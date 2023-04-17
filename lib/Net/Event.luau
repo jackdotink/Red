@@ -96,19 +96,18 @@ function Event.Listen()
 			end
 
 			local SingleFire = {}
+			local SendSingleFire = false
 
 			for EventId, Calls in Event.Outgoing[1] do
 				if #Calls == 1 then
-					if SingleFire[EventId] == nil then
-						SingleFire[EventId] = {}
-					end
-
-					table.insert(SingleFire[EventId], Calls[1])
+					SingleFire[EventId] = Calls[1]
 					Event.Outgoing[1][EventId] = nil
+
+					SendSingleFire = true
 				end
 			end
 
-			Remote:FireServer(if #SingleFire == 0 then nil else SingleFire, Event.Outgoing[1], Event.Outgoing[2])
+			Remote:FireServer(if SendSingleFire then SingleFire else nil, Event.Outgoing[1], Event.Outgoing[2])
 			table.clear(Event.Outgoing)
 
 			debug.profileend()
@@ -208,19 +207,18 @@ function Event.Listen()
 
 			for Player, Packets in Event.Outgoing do
 				local SingleCall = {}
+				local SendSingleCall = false
 
 				for EventId, Calls in Packets[1] do
 					if #Calls == 1 then
-						if SingleCall[EventId] == nil then
-							SingleCall[EventId] = {}
-						end
-
-						table.insert(SingleCall[EventId], Calls[1])
+						SingleCall[EventId] = Calls[1]
 						Packets[1][EventId] = nil
+
+						SendSingleCall = true
 					end
 				end
 
-				Remote:FireClient(Player, if #SingleCall == 0 then nil else SingleCall, Packets[1], Packets[2])
+				Remote:FireClient(Player, if SendSingleCall then SingleCall else nil, Packets[1], Packets[2])
 			end
 
 			table.clear(Event.Outgoing)
