@@ -1,40 +1,43 @@
-local Clock = require(script.Parent.Clock)
-
 return function<T>(Limit: number, Interval: number)
-	local Map = {} :: { [T]: number }
-	local Keyless = 0
+	local CountMap = {} :: { [T]: number }
+	local ThreadMap = {} :: { [T]: thread }
 
-	local RatelimitClock
-	RatelimitClock = Clock.new(Interval, function()
-		Keyless = 0
-		table.clear(Map)
-
-		RatelimitClock:Pause()
-	end)
-
-	RatelimitClock:Pause()
-
+	local CountKeyless = 0
+	local ThreadKeyless: thread?
+	
 	return function(Key: T?)
 		if Key then
-			local Count = Map[Key] or 0
+			local Count = CountMap[Key]
 
-			if Count > Limit then
-				return false
-			else
-				Map[Key] = Count + 1
-				RatelimitClock:Resume()
+			if Count == nil then
+				Count = 0
 
-				return true
+				ThreadMap[Key] = task.delay(Interval, function()
+					CountMap[Key] = nil
+					ThreadMap[Key] = nil
+				end)
 			end
+
+			if Count >= Limit then
+				return false
+			end
+
+			CountMap[Key] = Count + 1
 		else
-			if Keyless > Limit then
-				return false
-			else
-				Keyless = Keyless + 1
-				RatelimitClock:Resume()
-
-				return true
+			if ThreadKeyless == nil then
+				ThreadKeyless = task.delay(Interval, function()
+					CountKeyless = 0
+					ThreadKeyless = nil
+				end)
 			end
+
+			if CountKeyless >= Limit then
+				return false
+			end
+
+			CountKeyless = CountKeyless + 1
 		end
+
+		return true
 	end
 end

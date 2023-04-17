@@ -1,27 +1,21 @@
-local Clock = require(script.Parent.Clock)
-
 return function<K, V...>(Interval: number, Callback: (K) -> V...): (K) -> V...
-	local Cached = {}
-
-	local CacheClock
-	CacheClock = Clock.new(Interval, function()
-		table.clear(Cached)
-
-		CacheClock:Pause()
-	end)
-
-	CacheClock:Pause()
+	local CacheMap = {}
+	local ThreadMap = {}
 
 	return (
 		function(Key: K)
-			local Value = Cached[Key]
+			local Value = CacheMap[Key]
 
 			if Value then
 				return unpack(Value)
 			else
 				Value = { Callback(Key) }
-				Cached[Key] = Value
-				CacheClock:Resume()
+
+				CacheMap[Key] = Value
+				ThreadMap[Key] = task.delay(Interval, function()
+					CacheMap[Key] = nil
+					ThreadMap[Key] = nil
+				end)
 
 				return unpack(Value)
 			end
