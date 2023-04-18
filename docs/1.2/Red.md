@@ -11,13 +11,10 @@ Retrieves a server namespace.
 ```lua
 (
 	Name: string, -- The name of the server namespace.
-	EventNames: { string }? -- The names of the events that should be pre-defined.
 ) -> Server
 ```
 
-It should be noted that namespaces are global, you can call this function with the same name multiple times and you will have no issues. If you don't define your events when you create the namespace, any listeners on the client will yield until the server defines the event, which would be when it is first fired.
-
-**Simply put, define events that you fire to the client.**
+It should be noted that namespaces are global, you can call this function with the same name multiple times and you will have no issues.
 
 ::: code-group
 ```lua [Server]
