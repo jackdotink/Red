@@ -9,6 +9,6 @@ return {
 	Promise = require(script.Util.Promise),
 	Signal = require(script.Util.Signal),
 	Clock = require(script.Util.Clock),
-	Cache = require(script.Util.Cache),
 	Spawn = require(script.Util.Spawn),
+	Bin = require(script.Util.Bin),
 }
