@@ -1,9 +1,3 @@
-<div align="center">
-	<img src="docs/public/logo.png" alt="Red" />
-</div>
-
-<hr />
-
 # What is Red?
 
 Red is a networking library for Roblox that combines a good structure with blazing fast performance to provide a good developer experience. Red is suitable for any project, from tiny experiments to large-scale games.
@@ -19,15 +13,3 @@ Unlike many other networking libraries, which very simply wrap around Remote Eve
 ## Developer Experience
 
 Red uses Luau, and is internally typed completely in strict Luau. This creates full autocomplete and type checking for the developer. The Red API is very simple and easy to use, and it fits seamlessly into any project. Red is boilerplate free, there is no setup process.
-
-## Documentation
-
-Documentation can be found [here](https://redblox.dev).
-
-## Contributing
-
-Please read our [contribution guide](CONTRIBUTING.md).
-
-## License
-
-Red is licensed under the [MIT License](LICENSE).

@@ -1,60 +1,89 @@
 function nav() {
 	return [
-		{ text: 'Version', items: [
-			{ text: '1.0', link: '/1.0/guide/what-is-red' },
-			{ text: '1.1', link: '/1.1/guide/what-is-red' },
-		]},
+		{ text: 'Guide', link: '/guide/introduction/what-is-red' },
+		{
+			text: 'API Reference',
+			items: [
+				{ text: '1.2', link: '/1.2/Red' },
+				{ text: '1.1', link: '/1.1/Red' },
+				{ text: '1.0', link: '/1.0/Red' },
+			]
+		},
 		{ text: 'Changelog', link: '/changelog' },
 	]
 }
 
 function sidebar() {
 	return {
-		'/1.0/': [
+		'/guide/': [
 			{
-				text: 'Guide',
+				text: 'Introduction',
 				items: [
-					{ text: 'What is Red?', link: '/1.0/guide/what-is-red' },
-					{ text: 'Getting Started', link: '/1.0/guide/getting-started' },
-					{ text: 'Namespaces', link: '/1.0/guide/namespaces' },
-					{ text: 'System Architecture', link: '/1.0/guide/systems' },
+					{ text: 'What is Red?', link: '/guide/introduction/what-is-red' },
+					{ text: 'Installation & Tooling', link: '/guide/introduction/installation-tooling' },
+					{ text: 'Where Next & FAQ', link: '/guide/introduction/where-next-faq' },
 				]
 			},
 			{
-				text: 'Reference',
+				text: 'Namespaces',
 				items: [
-					{ text: 'Red', link: '/1.0/api/Red' },
-					{ text: 'Server', link: '/1.0/api/Server' },
-					{ text: 'Client', link: '/1.0/api/Client' },
-					{ text: 'Promise', link: '/1.0/api/Promise' },
-					{ text: 'Signal', link: '/1.0/api/Signal' },
-					{ text: 'Clock', link: '/1.0/api/Clock' },
+					{ text: 'What is a Namespace?', link: '/guide/namespaces/what-is-namespace' },
+					{ text: 'Listening to Events', link: '/guide/namespaces/listening-events' },
+					{ text: 'Sending and Invoking Events', link: '/guide/namespaces/sending-invoking-events' },
+					{ text: 'Replicating Data', link: '/guide/namespaces/replicating-data' },
+				]
+			},
+			{
+				text: 'Hacking Red',
+				items: [
+					{ text: 'Introduction', link: '/guide/hacking-red/introduction' },
+					{ text: 'Identifiers', link: '/guide/hacking-red/identifiers' },
+					{ text: 'Event Data Structure', link: '/guide/hacking-red/event-data-structure' },
+				]
+			},
+		],
+
+		'/1.0/': [
+			{
+				text: 'API Reference',
+				items: [
+					{ text: 'Red', link: '/1.0/Red' },
+					{ text: 'Server', link: '/1.0/Server' },
+					{ text: 'Client', link: '/1.0/Client' },
+					{ text: 'Promise', link: '/1.0/Promise' },
+					{ text: 'Signal', link: '/1.0/Signal' },
+					{ text: 'Clock', link: '/1.0/Clock' },
 				]
 			}
 		],
 
 		'/1.1/': [
 			{
-				text: 'Guide',
+				text: 'API Reference',
 				items: [
-					{ text: 'What is Red?', link: '/1.1/guide/what-is-red' },
-					{ text: 'Getting Started', link: '/1.1/guide/getting-started' },
-					{ text: 'Namespaces', link: '/1.1/guide/namespaces' },
-					{ text: 'System Architecture', link: '/1.1/guide/systems' },
-				],
-			},
-			{
-				text: 'Reference',
-				items: [
-					{ text: 'Red', link: '/1.1/api/Red' },
-					{ text: 'Server', link: '/1.1/api/Server' },
-					{ text: 'Client', link: '/1.1/api/Client' },
-					{ text: 'Promise', link: '/1.1/api/Promise' },
-					{ text: 'Signal', link: '/1.1/api/Signal' },
-					{ text: 'Clock', link: '/1.1/api/Clock' },
+					{ text: 'Red', link: '/1.1/Red' },
+					{ text: 'Server', link: '/1.1/Server' },
+					{ text: 'Client', link: '/1.1/Client' },
+					{ text: 'Promise', link: '/1.1/Promise' },
+					{ text: 'Signal', link: '/1.1/Signal' },
+					{ text: 'Clock', link: '/1.1/Clock' },
 				]
 			}
-		]
+		],
+
+		'/1.2/': [
+			{
+				text: 'API Reference',
+				items: [
+					{ text: 'Red', link: '/1.2/Red' },
+					{ text: 'Server', link: '/1.2/Server' },
+					{ text: 'Client', link: '/1.2/Client' },
+					{ text: 'Promise', link: '/1.2/Promise' },
+					{ text: 'Signal', link: '/1.2/Signal' },
+					{ text: 'Clock', link: '/1.2/Clock' },
+				]
+			}
+		],
 	}
 }
 
