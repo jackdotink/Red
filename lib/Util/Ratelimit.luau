@@ -1,9 +1,8 @@
 return function<T>(Limit: number, Interval: number)
-	local CountMap = {} :: { [T]: number }
-	local ThreadMap = {} :: { [T]: thread }
+	assert(Limit > 0, "Limit must be greater than 0")
 
+	local CountMap = {} :: { [T]: number }
 	local CountKeyless = 0
-	local ThreadKeyless: thread?
 	
 	return function(Key: T?)
 		if Key then
@@ -12,9 +11,8 @@ return function<T>(Limit: number, Interval: number)
 			if Count == nil then
 				Count = 0
 
-				ThreadMap[Key] = task.delay(Interval, function()
+				task.delay(Interval, function()
 					CountMap[Key] = nil
-					ThreadMap[Key] = nil
 				end)
 			end
 
@@ -24,10 +22,9 @@ return function<T>(Limit: number, Interval: number)
 
 			CountMap[Key] = Count + 1
 		else
-			if ThreadKeyless == nil then
-				ThreadKeyless = task.delay(Interval, function()
+			if CountKeyless == 0 then
+				task.delay(Interval, function()
 					CountKeyless = 0
-					ThreadKeyless = nil
 				end)
 			end
 
