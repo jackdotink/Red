@@ -1,5 +1,9 @@
 # Changelog
 
+## Release 1.2.1
+
+- Fixed error when client calls function-like event
+
 ## Release 1.2.0
 
 - Added [Ratelimit](1.2/Red#ratelimit) utility function
