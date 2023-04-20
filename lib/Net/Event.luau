@@ -98,12 +98,14 @@ function Event.Listen()
 			local SingleFire = {}
 			local SendSingleFire = false
 
-			for EventId, Calls in Event.Outgoing[1] do
-				if #Calls == 1 then
-					SingleFire[EventId] = Calls[1]
-					Event.Outgoing[1][EventId] = nil
+			if Event.Outgoing[1] then
+				for EventId, Calls in Event.Outgoing[1] do
+					if #Calls == 1 then
+						SingleFire[EventId] = Calls[1]
+						Event.Outgoing[1][EventId] = nil
 
-					SendSingleFire = true
+						SendSingleFire = true
+					end
 				end
 			end
 
@@ -209,12 +211,14 @@ function Event.Listen()
 				local SingleCall = {}
 				local SendSingleCall = false
 
-				for EventId, Calls in Packets[1] do
-					if #Calls == 1 then
-						SingleCall[EventId] = Calls[1]
-						Packets[1][EventId] = nil
+				if Packets[1] then
+					for EventId, Calls in Packets[1] do
+						if #Calls == 1 then
+							SingleCall[EventId] = Calls[1]
+							Packets[1][EventId] = nil
 
-						SendSingleCall = true
+							SendSingleCall = true
+						end
 					end
 				end
 
