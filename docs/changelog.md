@@ -1,5 +1,9 @@
 # Changelog
 
+## Release 1.2.2
+
+- Fixed clock not resuming after pause
+
 ## Release 1.2.1
 
 - Fixed error when client calls function-like event
