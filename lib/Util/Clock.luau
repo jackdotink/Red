@@ -17,7 +17,7 @@ function Clock.Clock(Interval: number, Callback: () -> ())
 	self.Callback = Callback
 	self.Delta = 0
 
-	self.Connection = RunService.Heartbeat:Connect(MakeHeartbeatFunction(self)) :: RBXScriptConnection?
+	self.Connection = RunService.Heartbeat:Connect(MakeHeartbeatFunction(self))
 
 	return self
 end
@@ -31,7 +31,7 @@ function Clock.Pause(self: Clock)
 end
 
 function Clock.Resume(self: Clock)
-	if self.Connection ~= nil then
+	if self.Connection.Connected then
 		return
 	end
 
