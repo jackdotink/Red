@@ -163,6 +163,9 @@ function Event.Listen()
 					if Event.Callbacks[EventId] then
 						for _, Call in Calls do
 							Spawn(function()
+								local CallId = table.remove(Call, 1)
+								local Result = { CallId, pcall(Callback, Player, unpack(Call)) }
+
 								if Event.Outgoing[Player] == nil then
 									Event.Outgoing[Player] = {}
 								end
@@ -171,12 +174,7 @@ function Event.Listen()
 									Event.Outgoing[Player][2] = {}
 								end
 
-								local CallId = table.remove(Call, 1)
-
-								table.insert(Event.Outgoing[Player][2], {
-									CallId,
-									pcall(Event.Callbacks[EventId] :: any, Player, unpack(Call)),
-								})
+								table.insert(Event.Outgoing[Player][2], Result)
 							end)
 						end
 					else
