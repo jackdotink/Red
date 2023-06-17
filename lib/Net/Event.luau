@@ -164,7 +164,7 @@ function Event.Listen()
 						for _, Call in Calls do
 							Spawn(function()
 								local CallId = table.remove(Call, 1)
-								local Result = { CallId, pcall(Callback, Player, unpack(Call)) }
+								local Result = { CallId, pcall(Event.Callbacks[EventId], Player, unpack(Call)) }
 
 								if Event.Outgoing[Player] == nil then
 									Event.Outgoing[Player] = {}
