@@ -4,6 +4,8 @@
 
 <hr />
 
+**Red has moved to a new [repo](https://github.com/red-blox/red/). This repo has since been archived.**
+
 # What is Red?
 
 Red is a networking library for Roblox that combines a good structure with blazing fast performance to provide a good developer experience. Red is suitable for any project, from tiny experiments to large-scale games.
