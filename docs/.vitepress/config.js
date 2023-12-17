@@ -91,7 +91,7 @@ export default {
 	title: 'Red',
 	description: 'A simple, fast, and powerful networking library.',
 	lang: 'en-US',
-	base: '/red/',
+	base: '/Red/',
 	head: [
 		['link', { rel: 'icon', href: '/favicon.png' }],
 	],
